@@ -9,7 +9,7 @@ public class InfoController {
     private static final String ROOT_CONTEXT_PATH = "/";
     private static final String INFO_CONTEXT_PATH = "/info";
 
-    @GetMapping(value = "/")
+    @GetMapping(value = ROOT_CONTEXT_PATH)
     public String home() {
         return this.info();
     }

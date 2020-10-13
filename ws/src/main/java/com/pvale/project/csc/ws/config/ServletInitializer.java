@@ -1,5 +1,6 @@
 package com.pvale.project.csc.ws.config;
 
+import com.pvale.project.csc.ws.CscApiApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
