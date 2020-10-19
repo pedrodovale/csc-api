@@ -7,5 +7,5 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackages = {
         "com.pvale.project.csc.ws.controller"
 })
-public class WsMainConfig {
+public class WsConfig {
 }

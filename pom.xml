@@ -13,23 +13,47 @@
 
     <modules>
         <module>ws</module>
+        <module>bsl</module>
+        <module>api</module>
     </modules>
 
     <properties>
+
+        <!-- java -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <!-- plugins -->
+
+        <version-maven-war-plugin>3.0.0</version-maven-war-plugin>
+
+        <!-- dependencies -->
         <version.spring-boot>2.2.6.RELEASE</version.spring-boot>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- Spring Framework -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <type>pom</type>
                 <version>${version.spring-boot}</version>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- CSC API dependencies -->
+            <dependency>
+                <groupId>com.pvale.project.csc</groupId>
+                <artifactId>bsl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pvale.project.csc</groupId>
+                <artifactId>api</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -39,6 +63,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version-maven-war-plugin}</version>
             </plugin>
         </plugins>
     </build>
