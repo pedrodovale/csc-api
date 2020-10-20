@@ -47,6 +47,35 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "credentials list",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/csc/v1/credentials/list",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"csc",
+						"v1",
+						"credentials",
+						"list"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
