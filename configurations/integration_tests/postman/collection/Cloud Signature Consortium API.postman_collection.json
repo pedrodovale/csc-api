@@ -1,0 +1,53 @@
+{
+	"info": {
+		"_postman_id": "6b53c476-931b-4f47-a2fb-8778b9f9546a",
+		"name": "Cloud Signature Consortium API",
+		"description": "A collection to test the Cloud Signature Consortium API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "94c44c29-afd9-44ec-a21d-0b568589c426",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/csc/v1/info",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"csc",
+						"v1",
+						"info"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
