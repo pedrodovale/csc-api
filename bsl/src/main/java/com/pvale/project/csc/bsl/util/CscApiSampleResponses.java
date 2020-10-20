@@ -1,5 +1,6 @@
 package com.pvale.project.csc.bsl.util;
 
+import com.pvale.project.csc.api.response.CredentialsListResponse;
 import com.pvale.project.csc.api.response.InfoResponse;
 
 import java.util.stream.Collectors;
@@ -33,5 +34,14 @@ public class CscApiSampleResponses {
                 .collect(Collectors.toSet()));
 
         return infoResponse;
+    }
+
+    public static CredentialsListResponse credentialsList() {
+
+        CredentialsListResponse credentialsListResponse = new CredentialsListResponse();
+
+        credentialsListResponse.setCredentialIDs(Stream.of("GX0112348", "HX0224685").collect(Collectors.toSet()));
+
+        return credentialsListResponse;
     }
 }
