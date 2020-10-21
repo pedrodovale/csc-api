@@ -1,8 +1,10 @@
 package com.pvale.project.csc.bsl.service;
 
 import com.pvale.project.csc.api.exception.CscApiException;
+import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
 import com.pvale.project.csc.api.request.InfoRequest;
+import com.pvale.project.csc.api.response.CredentialsInfoResponse;
 import com.pvale.project.csc.api.response.CredentialsListResponse;
 import com.pvale.project.csc.api.response.InfoResponse;
 import com.pvale.project.csc.bsl.util.CscApiSampleResponses;
@@ -25,5 +27,11 @@ public class CscApiServiceImpl implements CscApiService {
     public CredentialsListResponse credentialsList(CredentialsListRequest credentialsListRequest) {
         LOGGER.info("@credentialsList - request: {}", credentialsListRequest);
         return CscApiSampleResponses.credentialsList();
+    }
+
+    @Override
+    public CredentialsInfoResponse credentialsInfo(CredentialsInfoRequest credentialsInfoRequest) throws CscApiException {
+        LOGGER.info("@credentialsInfo - request: {}", credentialsInfoRequest);
+        return CscApiSampleResponses.credentialsInfo();
     }
 }

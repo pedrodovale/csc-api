@@ -46,6 +46,13 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- json -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.10.3</version>
+            </dependency>
+
             <!-- CSC API dependencies -->
             <dependency>
                 <groupId>com.pvale.project.csc</groupId>
