@@ -55,7 +55,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{}",
+					"raw": "{\n    \"maxResults\": 10\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -72,6 +72,35 @@
 						"v1",
 						"credentials",
 						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "credentials info",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"credentialID\": \"GX0112348\",\n    \"certificates\": \"chain\",\n    \"certInfo\": true,\n    \"authInfo\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/csc/v1/credentials/info",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"csc",
+						"v1",
+						"credentials",
+						"info"
 					]
 				}
 			},

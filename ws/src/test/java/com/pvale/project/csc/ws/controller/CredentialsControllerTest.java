@@ -1,6 +1,7 @@
 package com.pvale.project.csc.ws.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pvale.project.csc.api.response.CredentialsInfoResponse;
 import com.pvale.project.csc.api.response.CredentialsListResponse;
 import com.pvale.project.csc.bsl.service.CscApiService;
 import com.pvale.project.csc.bsl.util.CscApiSampleResponses;
@@ -48,6 +49,21 @@ public class CredentialsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(this.objectMapper.writeValueAsString(mockedCredentialsListResponse)));
+
+    }
+
+    @Test
+    public void whenCallCredentialsInfo_thenReturnCredentialsInfoResponse() throws Exception {
+
+        CredentialsInfoResponse mockedCredentialsInfoResponse = CscApiSampleResponses.credentialsInfo();
+
+        Mockito.when(this.cscApiService.credentialsInfo(anyObject())).thenReturn(mockedCredentialsInfoResponse);
+
+        this.mockMvc.perform(
+                post(BASE_URL + CredentialsController.CREDENTIALS_INFO_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().json(this.objectMapper.writeValueAsString(mockedCredentialsInfoResponse)));
 
     }
 }
