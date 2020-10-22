@@ -2,6 +2,7 @@ package com.pvale.project.csc.ws.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
+import com.pvale.project.csc.api.response.CredentialsExtendTransactionResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponse;
 import com.pvale.project.csc.api.response.CredentialsListResponse;
 import com.pvale.project.csc.bsl.service.CscApiService;
@@ -80,5 +81,19 @@ public class CredentialsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(this.objectMapper.writeValueAsString(mockedCredentialsAuthorizeResponse)));
+    }
+
+    @Test
+    public void whenCallCredentialsExtendTransaction_thenReturnCredentialsExtendTransactionResponse() throws Exception {
+
+        CredentialsExtendTransactionResponse mockedCredentialsExtendTransactionResponse = CscApiSampleResponses.credentialsExtendTransaction();
+
+        Mockito.when(this.cscApiService.credentialsExtendTransaction(anyObject())).thenReturn(mockedCredentialsExtendTransactionResponse);
+
+        this.mockMvc.perform(
+                post(BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().json(this.objectMapper.writeValueAsString(mockedCredentialsExtendTransactionResponse)));
     }
 }
