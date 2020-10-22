@@ -7,11 +7,13 @@ import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
 import com.pvale.project.csc.api.request.CredentialsSendOtpRequest;
 import com.pvale.project.csc.api.request.InfoRequest;
+import com.pvale.project.csc.api.request.SignaturesSignHashRequest;
 import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
 import com.pvale.project.csc.api.response.CredentialsExtendTransactionResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponse;
 import com.pvale.project.csc.api.response.CredentialsListResponse;
 import com.pvale.project.csc.api.response.InfoResponse;
+import com.pvale.project.csc.api.response.SignaturesSignHashResponse;
 import com.pvale.project.csc.bsl.util.CscApiSampleResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,5 +58,11 @@ public class CscApiServiceImpl implements CscApiService {
     public void credentialsSendOtp(CredentialsSendOtpRequest credentialsSendOtpRequest) {
         LOGGER.info("@credentialsSendOtp - request: {}", credentialsSendOtpRequest);
         return;
+    }
+
+    @Override
+    public SignaturesSignHashResponse signaturesSignHash(SignaturesSignHashRequest signaturesSignHashRequest) {
+        LOGGER.info("@signaturesSignHash - request: {}", signaturesSignHashRequest);
+        return CscApiSampleResponses.signaturesSignHash();
     }
 }
