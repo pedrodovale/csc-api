@@ -6,6 +6,7 @@ import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseCodeFormat;
 import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseCodePresence;
 import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseKeyStatus;
 import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseOtpType;
+import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponseCert;
 import com.pvale.project.csc.api.response.CredentialsInfoResponseKey;
@@ -105,5 +106,14 @@ public class CscApiSampleResponses {
         credentialsInfoResponse.setLang("en-US");
 
         return credentialsInfoResponse;
+    }
+
+    public static CredentialsAuthorizeResponse credentialsAuthorize() {
+
+        CredentialsAuthorizeResponse credentialsAuthorizeResponse = new CredentialsAuthorizeResponse();
+
+        credentialsAuthorizeResponse.setSad("_TiHRG-bAH3XlFQZ3ndFhkXf9P24/CKN69L8gdSYp5_pw");
+
+        return credentialsAuthorizeResponse;
     }
 }
