@@ -5,6 +5,7 @@ import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
 import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
+import com.pvale.project.csc.api.request.CredentialsSendOtpRequest;
 import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
 import com.pvale.project.csc.api.response.CredentialsExtendTransactionResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponse;
@@ -28,7 +29,7 @@ public class CredentialsController {
     static final String CREDENTIALS_INFO_CONTEXT_PATH = "/info";
     static final String CREDENTIALS_AUTHORIZE_CONTEXT_PATH = "/authorize";
     static final String CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH = "/extendTransaction";
-    private static final String CREDENTIALS_SEND_OTP_CONTEXT_PATH = "/sendOTP";
+    static final String CREDENTIALS_SEND_OTP_CONTEXT_PATH = "/sendOTP";
 
     private CscApiService cscApiService;
 
@@ -59,5 +60,11 @@ public class CredentialsController {
     public CredentialsExtendTransactionResponse credentialsExtendTransaction(CredentialsExtendTransactionRequest credentialsExtendTransactionRequest) throws CscApiException {
         LOGGER.info("REST API request to method {}", CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH);
         return this.cscApiService.credentialsExtendTransaction(credentialsExtendTransactionRequest);
+    }
+
+    @PostMapping(value = CREDENTIALS_SEND_OTP_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void credentialsSendOtp(CredentialsSendOtpRequest credentialsSendOtpRequest) throws CscApiException {
+        LOGGER.info("REST API request to method {}", CREDENTIALS_SEND_OTP_CONTEXT_PATH);
+        this.cscApiService.credentialsSendOtp(credentialsSendOtpRequest);
     }
 }

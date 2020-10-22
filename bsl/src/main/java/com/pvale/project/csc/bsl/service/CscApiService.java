@@ -5,6 +5,7 @@ import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
 import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
+import com.pvale.project.csc.api.request.CredentialsSendOtpRequest;
 import com.pvale.project.csc.api.request.InfoRequest;
 import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
 import com.pvale.project.csc.api.response.CredentialsExtendTransactionResponse;
@@ -26,4 +27,6 @@ public interface CscApiService {
     CredentialsAuthorizeResponse credentialsAuthorize(CredentialsAuthorizeRequest credentialsAuthorizeRequest) throws CscApiException;
 
     CredentialsExtendTransactionResponse credentialsExtendTransaction(CredentialsExtendTransactionRequest credentialsExtendTransactionRequest) throws CscApiException;
+
+    void credentialsSendOtp(CredentialsSendOtpRequest credentialsSendOtpRequest);
 }

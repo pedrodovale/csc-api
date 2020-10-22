@@ -5,6 +5,7 @@ import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
 import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
+import com.pvale.project.csc.api.request.CredentialsSendOtpRequest;
 import com.pvale.project.csc.api.request.InfoRequest;
 import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
 import com.pvale.project.csc.api.response.CredentialsExtendTransactionResponse;
@@ -49,5 +50,11 @@ public class CscApiServiceImpl implements CscApiService {
     public CredentialsExtendTransactionResponse credentialsExtendTransaction(CredentialsExtendTransactionRequest credentialsExtendTransactionRequest) throws CscApiException {
         LOGGER.info("@credentialsExtendTransaction - request: {}", credentialsExtendTransactionRequest);
         return CscApiSampleResponses.credentialsExtendTransaction();
+    }
+
+    @Override
+    public void credentialsSendOtp(CredentialsSendOtpRequest credentialsSendOtpRequest) {
+        LOGGER.info("@credentialsSendOtp - request: {}", credentialsSendOtpRequest);
+        return;
     }
 }

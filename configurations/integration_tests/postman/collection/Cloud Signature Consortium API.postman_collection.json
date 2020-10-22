@@ -163,6 +163,35 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "credentials send OTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"credentialID\": \"GX0112348\",\n    \"hash\": [\n        \"WlTTnNwS3FiY3NlNEllaXFsRGcvSFd1ST0=\"\n    ],\n    \"SAD\": \"_TiHRG-bAH3XlFQZ3ndFhkXf9P24/CKN69L8gdSYp5_pw\",\n    \"clientData\": \"12345678\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/csc/v1/credentials/extendTransaction",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"csc",
+						"v1",
+						"credentials",
+						"extendTransaction"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}
