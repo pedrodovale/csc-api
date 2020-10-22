@@ -4,27 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
-import java.util.Set;
 
-public class CredentialsExtendTransactionRequest {
+public class CredentialsSendOtpRequest {
 
     @NotNull
     @JsonProperty("credentialID")
     private String credentialId;
-    private Set<String> hash;
-    @NotNull
-    @JsonProperty("SAD")
-    private String sad;
     private String clientData;
 
-    public CredentialsExtendTransactionRequest() {
+    public CredentialsSendOtpRequest() {
         super();
     }
 
-    public CredentialsExtendTransactionRequest(@NotNull String credentialId, Set<String> hash, @NotNull String sad, String clientData) {
+    public CredentialsSendOtpRequest(@NotNull String credentialId, String clientData) {
         this.credentialId = credentialId;
-        this.hash = hash;
-        this.sad = sad;
         this.clientData = clientData;
     }
 
@@ -34,22 +27,6 @@ public class CredentialsExtendTransactionRequest {
 
     public void setCredentialId(String credentialId) {
         this.credentialId = credentialId;
-    }
-
-    public Set<String> getHash() {
-        return hash;
-    }
-
-    public void setHash(Set<String> hash) {
-        this.hash = hash;
-    }
-
-    public String getSad() {
-        return sad;
-    }
-
-    public void setSad(String sad) {
-        this.sad = sad;
     }
 
     public String getClientData() {
@@ -63,25 +40,21 @@ public class CredentialsExtendTransactionRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CredentialsExtendTransactionRequest)) return false;
-        CredentialsExtendTransactionRequest that = (CredentialsExtendTransactionRequest) o;
+        if (!(o instanceof CredentialsSendOtpRequest)) return false;
+        CredentialsSendOtpRequest that = (CredentialsSendOtpRequest) o;
         return Objects.equals(getCredentialId(), that.getCredentialId()) &&
-                Objects.equals(getHash(), that.getHash()) &&
-                Objects.equals(getSad(), that.getSad()) &&
                 Objects.equals(getClientData(), that.getClientData());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCredentialId(), getHash(), getSad(), getClientData());
+        return Objects.hash(getCredentialId(), getClientData());
     }
 
     @Override
     public String toString() {
-        return "CredentialsExtendTransactionRequest{" +
+        return "CredentialsSendOTPRequest{" +
                 "credentialId='" + credentialId + '\'' +
-                ", hash=" + hash +
-                ", sad='" + sad + '\'' +
                 ", clientData='" + clientData + '\'' +
                 '}';
     }

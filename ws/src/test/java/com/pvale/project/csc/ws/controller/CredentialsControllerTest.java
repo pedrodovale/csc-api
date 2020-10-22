@@ -96,4 +96,15 @@ public class CredentialsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(this.objectMapper.writeValueAsString(mockedCredentialsExtendTransactionResponse)));
     }
+
+    @Test
+    public void whenCallCredentialsSendOtp_thenReturnCredentialsSendOtpResponse() throws Exception {
+
+        Mockito.doNothing().when(this.cscApiService).credentialsSendOtp(anyObject());
+
+        this.mockMvc.perform(
+                post(BASE_URL + CredentialsController.CREDENTIALS_SEND_OTP_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
 }
