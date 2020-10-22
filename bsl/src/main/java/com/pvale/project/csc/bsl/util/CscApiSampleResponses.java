@@ -7,6 +7,7 @@ import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseCodePresence;
 import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseKeyStatus;
 import com.pvale.project.csc.api.enumerator.CredentialsInfoResponseOtpType;
 import com.pvale.project.csc.api.response.CredentialsAuthorizeResponse;
+import com.pvale.project.csc.api.response.CredentialsExtendTransactionResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponse;
 import com.pvale.project.csc.api.response.CredentialsInfoResponseCert;
 import com.pvale.project.csc.api.response.CredentialsInfoResponseKey;
@@ -115,5 +116,14 @@ public class CscApiSampleResponses {
         credentialsAuthorizeResponse.setSad("_TiHRG-bAH3XlFQZ3ndFhkXf9P24/CKN69L8gdSYp5_pw");
 
         return credentialsAuthorizeResponse;
+    }
+
+    public static CredentialsExtendTransactionResponse credentialsExtendTransaction() {
+
+        CredentialsExtendTransactionResponse credentialsExtendTransactionResponse = new CredentialsExtendTransactionResponse();
+
+        credentialsExtendTransactionResponse.setSad("1/UsHDJ98349h9fgh9348hKKHDkHWVkl/8hsAW5usc8_5=");
+
+        return credentialsExtendTransactionResponse;
     }
 }
