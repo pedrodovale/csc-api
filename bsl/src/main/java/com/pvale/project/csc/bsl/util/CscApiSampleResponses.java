@@ -15,6 +15,7 @@ import com.pvale.project.csc.api.response.CredentialsInfoResponseOtp;
 import com.pvale.project.csc.api.response.CredentialsInfoResponsePin;
 import com.pvale.project.csc.api.response.CredentialsListResponse;
 import com.pvale.project.csc.api.response.InfoResponse;
+import com.pvale.project.csc.api.response.SignaturesSignHashResponse;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -125,5 +126,16 @@ public class CscApiSampleResponses {
         credentialsExtendTransactionResponse.setSad("1/UsHDJ98349h9fgh9348hKKHDkHWVkl/8hsAW5usc8_5=");
 
         return credentialsExtendTransactionResponse;
+    }
+
+    public static SignaturesSignHashResponse signaturesSignHash() {
+
+        SignaturesSignHashResponse signaturesSignHashResponse = new SignaturesSignHashResponse();
+
+        signaturesSignHashResponse.setSignatures(Stream.of(
+                "KedJuTob5gtvYx9qM3k3gm7kbLBwVbEQRl26S2tmXjqNND7MRGtoew==",
+                "Idhef7xzgtvYx9qM3k3gm7kbLBwVbE98239S2tm8hUh85KKsfdowel==").collect(Collectors.toSet()));
+
+        return signaturesSignHashResponse;
     }
 }
