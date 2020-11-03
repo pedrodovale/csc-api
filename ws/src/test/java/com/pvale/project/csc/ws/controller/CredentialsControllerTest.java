@@ -120,7 +120,7 @@ public class CredentialsControllerTest {
                 post(BASE_URL + CredentialsController.CREDENTIALS_SEND_OTP_CONTEXT_PATH)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(this.objectMapper.writeValueAsString(credentialsSendOtpRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     private CredentialsListRequest credentialsListRequest() {
