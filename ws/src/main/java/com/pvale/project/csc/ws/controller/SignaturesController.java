@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/signatures")
 public class SignaturesController {
@@ -30,7 +32,7 @@ public class SignaturesController {
     }
 
     @PostMapping(value = SIGNATURES_SIGN_HASH_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public SignaturesSignHashResponse signaturesSignHash(@RequestBody SignaturesSignHashRequest signaturesSignHashRequest) throws CscApiException {
+    public SignaturesSignHashResponse signaturesSignHash(@Valid @RequestBody SignaturesSignHashRequest signaturesSignHashRequest) throws CscApiException {
         LOGGER.info("REST API request to method /signatures{}", SIGNATURES_SIGN_HASH_CONTEXT_PATH);
         return this.cscApiService.signaturesSignHash(signaturesSignHashRequest);
     }

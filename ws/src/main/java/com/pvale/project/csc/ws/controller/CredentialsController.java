@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/credentials")
 public class CredentialsController {
@@ -40,31 +42,31 @@ public class CredentialsController {
     }
 
     @PostMapping(value = CREDENTIALS_LIST_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CredentialsListResponse credentialsList(@RequestBody CredentialsListRequest credentialsListRequest) throws CscApiException {
+    public CredentialsListResponse credentialsList(@Valid @RequestBody CredentialsListRequest credentialsListRequest) throws CscApiException {
         LOGGER.info("REST API request to method /credentials{}", CREDENTIALS_LIST_CONTEXT_PATH);
         return this.cscApiService.credentialsList(credentialsListRequest);
     }
 
     @PostMapping(value = CREDENTIALS_INFO_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CredentialsInfoResponse credentialsInfo(@RequestBody CredentialsInfoRequest credentialsInfoRequest) throws CscApiException {
+    public CredentialsInfoResponse credentialsInfo(@Valid @RequestBody CredentialsInfoRequest credentialsInfoRequest) throws CscApiException {
         LOGGER.info("REST API request to method /credentials{}", CREDENTIALS_INFO_CONTEXT_PATH);
         return this.cscApiService.credentialsInfo(credentialsInfoRequest);
     }
 
     @PostMapping(value = CREDENTIALS_AUTHORIZE_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CredentialsAuthorizeResponse credentialsAuthorizeResponse(@RequestBody CredentialsAuthorizeRequest credentialsAuthorizeRequest) throws CscApiException {
+    public CredentialsAuthorizeResponse credentialsAuthorizeResponse(@Valid @RequestBody CredentialsAuthorizeRequest credentialsAuthorizeRequest) throws CscApiException {
         LOGGER.info("REST API request to method /credentials{}", CREDENTIALS_AUTHORIZE_CONTEXT_PATH);
         return this.cscApiService.credentialsAuthorize(credentialsAuthorizeRequest);
     }
 
     @PostMapping(value = CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CredentialsExtendTransactionResponse credentialsExtendTransaction(@RequestBody CredentialsExtendTransactionRequest credentialsExtendTransactionRequest) throws CscApiException {
+    public CredentialsExtendTransactionResponse credentialsExtendTransaction(@Valid @RequestBody CredentialsExtendTransactionRequest credentialsExtendTransactionRequest) throws CscApiException {
         LOGGER.info("REST API request to method /credentials{}", CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH);
         return this.cscApiService.credentialsExtendTransaction(credentialsExtendTransactionRequest);
     }
 
     @PostMapping(value = CREDENTIALS_SEND_OTP_CONTEXT_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void credentialsSendOtp(@RequestBody CredentialsSendOtpRequest credentialsSendOtpRequest) throws CscApiException {
+    public void credentialsSendOtp(@Valid @RequestBody CredentialsSendOtpRequest credentialsSendOtpRequest) throws CscApiException {
         LOGGER.info("REST API request to method /credentials{}", CREDENTIALS_SEND_OTP_CONTEXT_PATH);
         this.cscApiService.credentialsSendOtp(credentialsSendOtpRequest);
     }
