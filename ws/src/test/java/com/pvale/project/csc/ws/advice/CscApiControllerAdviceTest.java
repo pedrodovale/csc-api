@@ -1,30 +1,35 @@
-package com.pvale.project.csc.ws.controller;
+package com.pvale.project.csc.ws.advice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pvale.project.csc.api.enumerator.CscApiErrorType;
+import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.request.InfoRequest;
-import com.pvale.project.csc.api.response.InfoResponse;
+import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import com.pvale.project.csc.bsl.service.CscApiService;
-import com.pvale.project.csc.bsl.util.CscApiSampleResponses;
 import com.pvale.project.csc.ws.config.WsTestConfig;
+import com.pvale.project.csc.ws.controller.InfoController;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import java.util.Locale;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
 @Import(WsTestConfig.class)
-public class InfoControllerTest {
+class CscApiControllerAdviceTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -35,17 +40,14 @@ public class InfoControllerTest {
     @MockBean
     public CscApiService cscApiService;
 
-    @Test
-    void whenCallDefault_thenReturnCscApiInfo() throws Exception {
-        this.mockMvc.perform(get(InfoController.ROOT_CONTEXT_PATH))
-                .andExpect(status().isOk());
-    }
+    @Autowired
+    @Qualifier("cscApiErrorMessages")
+    private MessageSource messageSource;
 
     @Test
-    void whenCallInfo_thenReturnCscApiInfo() throws Exception {
+    void whenCallInfo_thenReturnServerError() throws Exception {
 
-        InfoResponse mockedResponse = CscApiSampleResponses.info();
-        Mockito.when(this.cscApiService.info(any())).thenReturn(mockedResponse);
+        Mockito.when(this.cscApiService.info(any())).thenThrow(new CscServerErrorException());
 
         InfoRequest infoRequest = this.infoRequest();
 
@@ -53,11 +55,17 @@ public class InfoControllerTest {
                 post(InfoController.INFO_CONTEXT_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(this.objectMapper.writeValueAsString(infoRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString(this.objectMapper.writeValueAsString(mockedResponse))));
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.SERVER_ERROR, null)));
+
     }
 
     private InfoRequest infoRequest() {
         return new InfoRequest();
+    }
+
+    private String getJsonErrorMessage(CscApiErrorType cscApiErrorType, Object[] args) throws JsonProcessingException {
+        String errorDescription = this.messageSource.getMessage(cscApiErrorType.getApiError(), args, Locale.ENGLISH);
+        return this.objectMapper.writeValueAsString(new CscApiErrorResponse(cscApiErrorType, errorDescription));
     }
 }

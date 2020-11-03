@@ -1,12 +1,12 @@
 package com.pvale.project.csc.ws;
 
-import com.pvale.project.csc.ws.config.WsConfig;
+import com.pvale.project.csc.ws.config.WsCoreConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@Import(WsConfig.class)
+@Import(WsCoreConfig.class)
 public class CscApiApplication {
 
 	public static void main(String[] args) {

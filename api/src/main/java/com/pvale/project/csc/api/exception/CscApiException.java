@@ -1,10 +1,11 @@
 package com.pvale.project.csc.api.exception;
 
-public class CscApiException extends Exception {
+public abstract class CscApiException extends Exception {
 
     private static final long serialVersionUID = -4161688562815499589L;
 
     public CscApiException() {
+        super();
     }
 
     public CscApiException(String message) {
