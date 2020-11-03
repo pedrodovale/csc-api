@@ -30,7 +30,7 @@ public interface CscApiService {
 
     CredentialsExtendTransactionResponse credentialsExtendTransaction(CredentialsExtendTransactionRequest credentialsExtendTransactionRequest) throws CscApiException;
 
-    void credentialsSendOtp(CredentialsSendOtpRequest credentialsSendOtpRequest);
+    void credentialsSendOtp(CredentialsSendOtpRequest credentialsSendOtpRequest) throws CscApiException;
 
-    SignaturesSignHashResponse signaturesSignHash(SignaturesSignHashRequest signaturesSignHashRequest);
+    SignaturesSignHashResponse signaturesSignHash(SignaturesSignHashRequest signaturesSignHashRequest) throws CscApiException;
 }
