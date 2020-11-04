@@ -11,10 +11,12 @@ import java.util.Locale;
 @Configuration
 public class WsCoreConfig {
 
+    public static final String ERROR_MESSAGE_BUNDLE_PATH = "classpath:i18n/csc-api-errors";
+
     @Bean(name = "cscApiErrorMessages")
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:csc-api-errors");
+        messageSource.setBasename(ERROR_MESSAGE_BUNDLE_PATH);
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
         messageSource.setDefaultLocale(Locale.ENGLISH);
         return messageSource;
