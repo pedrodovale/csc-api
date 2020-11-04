@@ -1,8 +1,14 @@
 package com.pvale.project.csc.api.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.validation.constraints.Null;
+
 public class CredentialsListRequest {
 
-    private String userID;
+    @Null
+    @JsonProperty("userID")
+    private String userId; // for authentication parameters
     private Integer maxResults;
     private String pageToken;
     private String clientData;
@@ -11,12 +17,12 @@ public class CredentialsListRequest {
         super();
     }
 
-    public String getUserID() {
-        return userID;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Integer getMaxResults() {
