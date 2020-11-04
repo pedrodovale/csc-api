@@ -2,7 +2,10 @@ package com.pvale.project.csc.api.enumerator;
 
 public enum CscApiRequestParameter {
 
-    USER_ID("userID");
+    USER_ID("userID"),
+    CREDENTIAL_ID("credentialID"),
+    NUM_SIGNATURES("numSignatures"),
+    HASH("hash");
 
     String parameterName;
 

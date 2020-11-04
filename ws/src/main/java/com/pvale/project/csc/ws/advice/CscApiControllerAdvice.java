@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Locale;
 
 @RestControllerAdvice(basePackages = "com.pvale.project.csc.ws.controller")
@@ -29,6 +30,8 @@ public class CscApiControllerAdvice {
     private static final Logger LOGGER = LoggerFactory.getLogger(CscApiControllerAdvice.class);
     private static final Locale LOCALE = Locale.ENGLISH;
     private static final String NULL_CONSTRAINT_CODE = "Null";
+    private static final String NOT_NULL_CONSTRAINT_CODE = "NotNull";
+    public static final String ARRAY_PARAMETER_TYPE = "array";
 
     private MessageSource messageSource;
 
@@ -88,16 +91,17 @@ public class CscApiControllerAdvice {
             String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
             return new CscApiErrorResponse(error, errorDescription);
         }
-        Class<?> parameterType = methodParameter.getParameterType();
-        if (parameterType == null) {
+        Class<?> classParameterType = methodParameter.getParameterType();
+        if (classParameterType == null) {
             CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
             String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
             return new CscApiErrorResponse(error, errorDescription);
         }
 
+        Field field;
         String parameterName;
         try {
-            Field field = parameterType.getDeclaredField(fieldName);
+            field = classParameterType.getDeclaredField(fieldName);
 
             if (field == null) {
                 CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
@@ -126,6 +130,17 @@ public class CscApiControllerAdvice {
         if (StringUtils.equals(fieldError.getCode(), NULL_CONSTRAINT_CODE)) {
             CscApiErrorType error = CscApiErrorType.PARAMETER_NULL;
             String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterName}, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        } else if (StringUtils.equals(fieldError.getCode(), NOT_NULL_CONSTRAINT_CODE)) {
+            CscApiErrorType error = CscApiErrorType.MISSING_OR_INVALID_TYPE;
+            Class<?> type = field.getType();
+            String parameterType;
+            if (Collection.class.isAssignableFrom(type)) {
+                parameterType = ARRAY_PARAMETER_TYPE;
+            } else {
+                parameterType = type.getSimpleName().toLowerCase();
+            }
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterType, parameterName}, LOCALE);
             return new CscApiErrorResponse(error, errorDescription);
         } else {
             CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;

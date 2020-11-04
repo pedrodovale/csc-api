@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
+import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
+import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
 import com.pvale.project.csc.api.request.InfoRequest;
+import com.pvale.project.csc.api.request.SignaturesSignHashRequest;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import com.pvale.project.csc.bsl.service.CscApiService;
 import com.pvale.project.csc.ws.config.WsTestConfig;
 import com.pvale.project.csc.ws.controller.CredentialsController;
 import com.pvale.project.csc.ws.controller.InfoController;
+import com.pvale.project.csc.ws.controller.SignaturesController;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CscApiControllerAdviceTest {
 
     public static final String CREDENTIALS_BASE_URL = "/credentials";
+    public static final String SIGNATURES_BASE_URL = "/signatures";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -66,7 +71,7 @@ class CscApiControllerAdviceTest {
     }
 
     @Test
-    void whenCallCredentialsList_thenReturnParameterNull() throws Exception {
+    void whenCallCredentialsList_thenReturnParameterNullForNotNullUserId() throws Exception {
 
         CredentialsListRequest credentialsListRequest = new CredentialsListRequest();
         credentialsListRequest.setUserId("userId");
@@ -78,6 +83,51 @@ class CscApiControllerAdviceTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.PARAMETER_NULL, new String[]{CscApiRequestParameter.USER_ID.getParameterName()})));
 
+    }
+
+    @Test
+    void whenCallCredentialsInfo_thenReturnMissingOrInvalidParameterForMissingStringCredentialId() throws Exception {
+
+        CredentialsInfoRequest credentialsInfoRequest = new CredentialsInfoRequest();
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_INFO_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsInfoRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.MISSING_OR_INVALID_TYPE, new String[]{"string", CscApiRequestParameter.CREDENTIAL_ID.getParameterName()})));
+
+    }
+
+    @Test
+    void whenCallCredentialsAuthorize_thenReturnMissingOrInvalidParameterForMissingIntegerNumSignatures() throws Exception {
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.MISSING_OR_INVALID_TYPE, new String[]{"integer", CscApiRequestParameter.NUM_SIGNATURES.getParameterName()})));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnMissingOrInvalidParameterForMissingArrayHash() throws Exception {
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("credentialId");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.MISSING_OR_INVALID_TYPE, new String[]{"array", CscApiRequestParameter.HASH.getParameterName()})));
 
     }
 
@@ -85,5 +135,4 @@ class CscApiControllerAdviceTest {
         String errorDescription = this.messageSource.getMessage(cscApiErrorType.getApiError(), args, Locale.ENGLISH);
         return this.objectMapper.writeValueAsString(new CscApiErrorResponse(cscApiErrorType, errorDescription));
     }
-
 }

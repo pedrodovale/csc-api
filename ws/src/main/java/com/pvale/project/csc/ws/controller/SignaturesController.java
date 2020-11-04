@@ -21,7 +21,7 @@ public class SignaturesController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SignaturesController.class);
 
-    static final String SIGNATURES_SIGN_HASH_CONTEXT_PATH = "/signHash";
+    public static final String SIGNATURES_SIGN_HASH_CONTEXT_PATH = "/signHash";
     private static final String SIGNATURES_TIMESTAMP_CONTEXT_PATH = "/timestamp";
 
     private CscApiService cscApiService;
