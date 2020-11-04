@@ -30,6 +30,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Apache Commons - utility for java.lang classes -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <!-- CSC API dependencies -->
         <dependency>
             <groupId>com.pvale.project.csc</groupId>
             <artifactId>bsl</artifactId>

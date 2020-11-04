@@ -30,7 +30,7 @@ public class CredentialsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CredentialsController.class);
 
-    static final String CREDENTIALS_LIST_CONTEXT_PATH = "/list";
+    public static final String CREDENTIALS_LIST_CONTEXT_PATH = "/list";
     static final String CREDENTIALS_INFO_CONTEXT_PATH = "/info";
     static final String CREDENTIALS_AUTHORIZE_CONTEXT_PATH = "/authorize";
     static final String CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH = "/extendTransaction";
