@@ -16,6 +16,8 @@ import com.pvale.project.csc.ws.config.WsTestConfig;
 import com.pvale.project.csc.ws.controller.CredentialsController;
 import com.pvale.project.csc.ws.controller.InfoController;
 import com.pvale.project.csc.ws.controller.SignaturesController;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +130,70 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.MISSING_OR_INVALID_TYPE, new String[]{"array", CscApiRequestParameter.HASH.getParameterName()})));
+
+    }
+
+    @Test
+    void whenCallCredentialsSendOtp_thenReturnMissingOrInvalidParameterForInvalidStringCredentialId() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("credentialID", new JSONArray()); // credentialId should be string, not array
+        String credentialsSendOtpJsonRequest = jsonObject.toString();
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_SEND_OTP_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(credentialsSendOtpJsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.MISSING_OR_INVALID_TYPE, new String[]{"string", CscApiRequestParameter.CREDENTIAL_ID.getParameterName()})));
+
+    }
+
+    @Test
+    void whenCallCredentialsExtendTransaction_thenReturnMissingOrInvalidParameterForInvalidArrayHash() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("credentialID", "credentialId");
+        jsonObject.put("SAD", "sad");
+        jsonObject.put("hash", "hash"); // hash should be an array, not a string
+        String credentialsExtendTransactionJsonRequest = jsonObject.toString();
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(credentialsExtendTransactionJsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.MISSING_OR_INVALID_TYPE, new String[]{"array", CscApiRequestParameter.HASH.getParameterName()})));
+
+    }
+
+    @Test
+    void whenCallInfo_thenReturnInvalidRequestForMalformedJsonString() throws Exception {
+
+        String malformedInfoJsonRequest = "{";
+
+        this.mockMvc.perform(
+                post(InfoController.INFO_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(malformedInfoJsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_REQUEST, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsSendOtp_thenReturnInvalidRequestForUnrecognizedProperty() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("credentialId", "credentialId"); // 'Id' should be 'ID' in parameter name
+        String credentialsSendOtpJsonRequest = jsonObject.toString();
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_SEND_OTP_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(credentialsSendOtpJsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_REQUEST, null)));
 
     }
 

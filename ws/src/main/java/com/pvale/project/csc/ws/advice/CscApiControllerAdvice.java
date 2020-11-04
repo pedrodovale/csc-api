@@ -1,6 +1,9 @@
 package com.pvale.project.csc.ws.advice;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
@@ -12,6 +15,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 @RestControllerAdvice(basePackages = "com.pvale.project.csc.ws.controller")
@@ -51,7 +57,7 @@ public class CscApiControllerAdvice {
     }
 
     /**
-     * This method will try to determine the method parameter with error.
+     * This method will try to determine the method parameter with error and build proper error response.
      * If it fails to do so, it'll just return the generic invalid request error
      *
      * @param e -> the input validation exception
@@ -147,5 +153,70 @@ public class CscApiControllerAdvice {
             String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
             return new CscApiErrorResponse(error, errorDescription);
         }
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public CscApiErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+
+        if (e.getCause() != null && !(e.getCause() instanceof MismatchedInputException)) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+
+        MismatchedInputException mismatchedInputException = (MismatchedInputException) e.getCause();
+
+        List<JsonMappingException.Reference> path = mismatchedInputException.getPath();
+        if (CollectionUtils.isEmpty(path)) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+
+        JsonMappingException.Reference reference = path.get(0);
+        if (reference == null) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+
+        String parameterName = reference.getFieldName();
+
+        Class<?> targetType = mismatchedInputException.getTargetType();
+        if (targetType == null) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+
+        String parameterType;
+        if (Collection.class.isAssignableFrom(targetType)) {
+            parameterType = ARRAY_PARAMETER_TYPE;
+        } else {
+            String simpleName = targetType.getSimpleName();
+            if (StringUtils.isBlank(simpleName)) {
+                CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+                String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+                return new CscApiErrorResponse(error, errorDescription);
+            }
+            parameterType = simpleName.toLowerCase();
+        }
+
+        CscApiErrorType error = CscApiErrorType.MISSING_OR_INVALID_TYPE;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterType, parameterName}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(UnrecognizedPropertyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public CscApiErrorResponse handleUnrecognizedPropertyException(UnrecognizedPropertyException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
     }
 }

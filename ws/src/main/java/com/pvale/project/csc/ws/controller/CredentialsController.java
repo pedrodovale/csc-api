@@ -33,7 +33,7 @@ public class CredentialsController {
     public static final String CREDENTIALS_LIST_CONTEXT_PATH = "/list";
     public static final String CREDENTIALS_INFO_CONTEXT_PATH = "/info";
     public static final String CREDENTIALS_AUTHORIZE_CONTEXT_PATH = "/authorize";
-    static final String CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH = "/extendTransaction";
+    public static final String CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH = "/extendTransaction";
     public static final String CREDENTIALS_SEND_OTP_CONTEXT_PATH = "/sendOTP";
 
     private CscApiService cscApiService;
