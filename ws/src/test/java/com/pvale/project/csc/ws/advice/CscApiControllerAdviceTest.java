@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -195,6 +196,77 @@ class CscApiControllerAdviceTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_REQUEST, null)));
 
+    }
+
+    @Test
+    void whenCallInfo_thenReturnMethodNotAllowed() throws Exception {
+
+        this.mockMvc.perform(
+                get(InfoController.INFO_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+
+        this.mockMvc.perform(
+                get(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_LIST_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+
+        this.mockMvc.perform(
+                get(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_INFO_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+
+        this.mockMvc.perform(
+                get(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+
+        this.mockMvc.perform(
+                get(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+
+        this.mockMvc.perform(
+                get(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_SEND_OTP_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+
+        this.mockMvc.perform(
+                get(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    void whenCallInfo_thenReturnUnsupportedMediaType() throws Exception {
+
+        this.mockMvc.perform(
+                post(InfoController.INFO_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_LIST_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_INFO_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_SEND_OTP_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.ALL_VALUE))
+                .andExpect(status().isUnsupportedMediaType());
     }
 
     private String getJsonErrorMessage(CscApiErrorType cscApiErrorType, Object[] args) throws JsonProcessingException {
