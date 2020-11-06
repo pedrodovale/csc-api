@@ -1,6 +1,7 @@
 package com.pvale.project.csc.ws.controller;
 
 import com.pvale.project.csc.api.exception.CscApiException;
+import com.pvale.project.csc.api.exception.CscNotImplementedException;
 import com.pvale.project.csc.api.request.SignaturesSignHashRequest;
 import com.pvale.project.csc.api.response.SignaturesSignHashResponse;
 import com.pvale.project.csc.bsl.service.CscApiService;
@@ -22,7 +23,7 @@ public class SignaturesController {
     private static final Logger LOGGER = LoggerFactory.getLogger(SignaturesController.class);
 
     public static final String SIGNATURES_SIGN_HASH_CONTEXT_PATH = "/signHash";
-    private static final String SIGNATURES_TIMESTAMP_CONTEXT_PATH = "/timestamp";
+    public static final String SIGNATURES_TIMESTAMP_CONTEXT_PATH = "/timestamp";
 
     private CscApiService cscApiService;
 
@@ -35,5 +36,11 @@ public class SignaturesController {
     public SignaturesSignHashResponse signaturesSignHash(@Valid @RequestBody SignaturesSignHashRequest signaturesSignHashRequest) throws CscApiException {
         LOGGER.info("REST API request to method /signatures{}", SIGNATURES_SIGN_HASH_CONTEXT_PATH);
         return this.cscApiService.signaturesSignHash(signaturesSignHashRequest);
+    }
+
+    @PostMapping(value = SIGNATURES_TIMESTAMP_CONTEXT_PATH)
+    public void signaturesTimestamp() throws CscApiException {
+        LOGGER.info("REST API request to method /signatures{}", SIGNATURES_TIMESTAMP_CONTEXT_PATH);
+        throw new CscNotImplementedException();
     }
 }

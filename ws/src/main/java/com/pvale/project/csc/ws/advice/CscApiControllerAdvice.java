@@ -15,6 +15,7 @@ import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
 import com.pvale.project.csc.api.exception.CscInvalidPinException;
+import com.pvale.project.csc.api.exception.CscNotImplementedException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
@@ -412,6 +413,15 @@ public class CscApiControllerAdvice {
     public CscApiErrorResponse handleCscEmptyHashArrayException(CscEmptyHashArrayException e){
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.EMPTY_HASH_ARRAY;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscNotImplementedException.class)
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    public CscApiErrorResponse handleCscNotImplementedException(CscNotImplementedException e){
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.NOT_IMPLEMENTED;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }

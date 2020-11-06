@@ -217,7 +217,7 @@ class CscApiControllerAdviceTest {
     }
 
     @Test
-    void whenCallInfo_thenReturnMethodNotAllowed() throws Exception {
+    void whenCallEach_thenReturnMethodNotAllowedForGetMethod() throws Exception {
 
         this.mockMvc.perform(
                 get(InfoController.INFO_CONTEXT_PATH))
@@ -249,7 +249,7 @@ class CscApiControllerAdviceTest {
     }
 
     @Test
-    void whenCallInfo_thenReturnUnsupportedMediaType() throws Exception {
+    void whenCallEach_thenReturnUnsupportedMediaTypeForAllMediaType() throws Exception {
 
         this.mockMvc.perform(
                 post(InfoController.INFO_CONTEXT_PATH)
@@ -616,6 +616,16 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.EMPTY_HASH_ARRAY, null)));
+
+    }
+
+    @Test
+    void whenCallSignaturesTimestamp_thenReturnNotImplementedError() throws Exception {
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_TIMESTAMP_CONTEXT_PATH))
+                .andExpect(status().isNotImplemented())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.NOT_IMPLEMENTED, null)));
 
     }
 
