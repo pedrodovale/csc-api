@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscExpiredCertificateException;
 import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidDigestValueLengthException;
 import com.pvale.project.csc.api.exception.CscInvalidOtpException;
@@ -14,8 +15,10 @@ import com.pvale.project.csc.api.exception.CscInvalidPinException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
+import com.pvale.project.csc.api.exception.CscRevokedCertificateException;
 import com.pvale.project.csc.api.exception.CscSadExpiredException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
+import com.pvale.project.csc.api.exception.CscSuspendedCertificateException;
 import com.pvale.project.csc.api.exception.CscUnauthorizedHashException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
@@ -522,6 +525,75 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_DIGEST_VALUE_LENGTH, null)));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnExpiredCertificateError() throws Exception {
+
+        CscExpiredCertificateException expiredCertificateException = new CscExpiredCertificateException("O=[organization],CN=[common_name]");
+        Mockito.when(this.cscApiService.signaturesSignHash(any())).thenThrow(expiredCertificateException);
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("credentialId");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setHash(Collections.singleton("hash"));
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        String subjectDn = expiredCertificateException.getSubjectDn();
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.EXPIRED_CERTIFICATE, new String[]{subjectDn})));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnRevokedCertificateError() throws Exception {
+
+        CscRevokedCertificateException revokedCertificateException = new CscRevokedCertificateException("O=[organization],CN=[common_name]");
+        Mockito.when(this.cscApiService.signaturesSignHash(any())).thenThrow(revokedCertificateException);
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("credentialId");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setHash(Collections.singleton("hash"));
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        String subjectDn = revokedCertificateException.getSubjectDn();
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.REVOKED_CERTIFICATE, new String[]{subjectDn})));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnSuspendedCertificateError() throws Exception {
+
+        CscSuspendedCertificateException suspendedCertificateException = new CscSuspendedCertificateException("O=[organization],CN=[common_name]");
+        Mockito.when(this.cscApiService.signaturesSignHash(any())).thenThrow(suspendedCertificateException);
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("credentialId");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setHash(Collections.singleton("hash"));
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        String subjectDn = suspendedCertificateException.getSubjectDn();
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.SUSPENDED_CERTIFICATE, new String[]{subjectDn})));
 
     }
 

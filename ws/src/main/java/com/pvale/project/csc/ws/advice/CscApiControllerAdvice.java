@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscExpiredCertificateException;
 import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidDigestValueLengthException;
 import com.pvale.project.csc.api.exception.CscInvalidOtpException;
@@ -16,8 +17,10 @@ import com.pvale.project.csc.api.exception.CscInvalidPinException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
+import com.pvale.project.csc.api.exception.CscRevokedCertificateException;
 import com.pvale.project.csc.api.exception.CscSadExpiredException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
+import com.pvale.project.csc.api.exception.CscSuspendedCertificateException;
 import com.pvale.project.csc.api.exception.CscUnauthorizedHashException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -355,6 +358,51 @@ public class CscApiControllerAdvice {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.INVALID_DIGEST_VALUE_LENGTH;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscExpiredCertificateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscExpiredCertificateException(CscExpiredCertificateException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        String subjectDn = e.getSubjectDn();
+        if (StringUtils.isBlank(subjectDn)) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+        CscApiErrorType error = CscApiErrorType.EXPIRED_CERTIFICATE;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{subjectDn}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscRevokedCertificateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscRevokedCertificateException(CscRevokedCertificateException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        String subjectDn = e.getSubjectDn();
+        if (StringUtils.isBlank(subjectDn)) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+        CscApiErrorType error = CscApiErrorType.REVOKED_CERTIFICATE;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{subjectDn}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscSuspendedCertificateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscSuspendedCertificateException(CscSuspendedCertificateException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        String subjectDn = e.getSubjectDn();
+        if (StringUtils.isBlank(subjectDn)) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+        CscApiErrorType error = CscApiErrorType.SUSPENDED_CERTIFICATE;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{subjectDn}, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }
