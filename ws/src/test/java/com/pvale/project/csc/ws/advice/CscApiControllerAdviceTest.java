@@ -6,6 +6,7 @@ import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
+import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
@@ -288,7 +289,7 @@ class CscApiControllerAdviceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PARAMETER, new String[]{CscApiRequestParameter.CREDENTIAL_ID.getParameterName()})));
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PARAMETER, new String[]{invalidParameterException.getCscApiRequestParameter().getParameterName()})));
 
     }
 
@@ -310,6 +311,26 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.CREDENTIAL_IS_DISABLED, null)));
+
+    }
+
+    @Test
+    public void whenCallCredentialsAuthorize_thenReturnInvalidParameterValueForInvalidCertificates() throws Exception {
+
+        CscInvalidParameterValueException invalidParameterValueException = new CscInvalidParameterValueException(CscApiRequestParameter.NUM_SIGNATURES);
+        Mockito.when(this.cscApiService.credentialsAuthorize(any())).thenThrow(invalidParameterValueException);
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+        credentialsAuthorizeRequest.setNumSignatures(-1); // invalid
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PARAMETER_VALUE, new String[]{invalidParameterValueException.getCscApiRequestParameter().getParameterName()})));
+
 
     }
 
