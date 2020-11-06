@@ -5,9 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
+import com.pvale.project.csc.api.exception.CscInvalidPinException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
+import com.pvale.project.csc.api.exception.CscOtpLockedException;
+import com.pvale.project.csc.api.exception.CscPinLockedException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
@@ -351,6 +355,86 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.NUM_SIGNATURES_TOO_HIGH, null)));
+    }
+
+    @Test
+    void whenCallCredentialsAuthorize_thenReturnInvalidOtp() throws Exception {
+
+        CscInvalidOtpException invalidOtpException = new CscInvalidOtpException();
+        Mockito.when(this.cscApiService.credentialsAuthorize(any())).thenThrow(invalidOtpException);
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+        credentialsAuthorizeRequest.setNumSignatures(1);
+        credentialsAuthorizeRequest.setOtp("invalidOtp");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_OTP, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsAuthorize_thenReturnLockedOtp() throws Exception {
+
+        CscOtpLockedException otpLockedException = new CscOtpLockedException();
+        Mockito.when(this.cscApiService.credentialsAuthorize(any())).thenThrow(otpLockedException);
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+        credentialsAuthorizeRequest.setNumSignatures(1);
+        credentialsAuthorizeRequest.setOtp("lockedOtp");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.LOCKED_OTP, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsAuthorize_thenReturnInvalidPin() throws Exception {
+
+        CscInvalidPinException invalidPinException = new CscInvalidPinException();
+        Mockito.when(this.cscApiService.credentialsAuthorize(any())).thenThrow(invalidPinException);
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+        credentialsAuthorizeRequest.setNumSignatures(1);
+        credentialsAuthorizeRequest.setPin("invalidPin");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PIN, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsAuthorize_thenReturnLockedPin() throws Exception {
+
+        CscPinLockedException pinLockedException = new CscPinLockedException();
+        Mockito.when(this.cscApiService.credentialsAuthorize(any())).thenThrow(pinLockedException);
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+        credentialsAuthorizeRequest.setNumSignatures(1);
+        credentialsAuthorizeRequest.setPin("lockedPin");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.LOCKED_PIN, null)));
+
     }
 
     private String getJsonErrorMessage(CscApiErrorType cscApiErrorType, Object[] args) throws JsonProcessingException {

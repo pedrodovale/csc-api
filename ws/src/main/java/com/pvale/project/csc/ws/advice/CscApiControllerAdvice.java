@@ -7,9 +7,13 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
+import com.pvale.project.csc.api.exception.CscInvalidPinException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
+import com.pvale.project.csc.api.exception.CscOtpLockedException;
+import com.pvale.project.csc.api.exception.CscPinLockedException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -266,6 +270,42 @@ public class CscApiControllerAdvice {
     public CscApiErrorResponse handleCscNumberSignaturesTooHighException(CscNumberSignaturesTooHighException e) {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.NUM_SIGNATURES_TOO_HIGH;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscInvalidOtpException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscInvalidOtpException(CscInvalidOtpException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.INVALID_OTP;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscOtpLockedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscOtpLockedException(CscOtpLockedException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.LOCKED_OTP;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscInvalidPinException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscInvalidPinException(CscInvalidPinException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.INVALID_PIN;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscPinLockedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscPinLockedException(CscPinLockedException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.LOCKED_PIN;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
