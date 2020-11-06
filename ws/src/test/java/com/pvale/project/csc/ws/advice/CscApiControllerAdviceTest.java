@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscEmptyHashArrayException;
 import com.pvale.project.csc.api.exception.CscExpiredCertificateException;
 import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidDigestValueLengthException;
@@ -594,6 +595,27 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.SUSPENDED_CERTIFICATE, new String[]{subjectDn})));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnEmptyHashArrayError() throws Exception {
+
+        CscEmptyHashArrayException emptyHashArrayException = new CscEmptyHashArrayException();
+        Mockito.when(this.cscApiService.signaturesSignHash(any())).thenThrow(emptyHashArrayException);
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("credentialId");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setHash(Collections.emptySet());
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.EMPTY_HASH_ARRAY, null)));
 
     }
 

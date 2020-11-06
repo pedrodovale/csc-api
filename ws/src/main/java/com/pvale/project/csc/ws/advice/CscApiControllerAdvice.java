@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscEmptyHashArrayException;
 import com.pvale.project.csc.api.exception.CscExpiredCertificateException;
 import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidDigestValueLengthException;
@@ -403,6 +404,15 @@ public class CscApiControllerAdvice {
         }
         CscApiErrorType error = CscApiErrorType.SUSPENDED_CERTIFICATE;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{subjectDn}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscEmptyHashArrayException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscEmptyHashArrayException(CscEmptyHashArrayException e){
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.EMPTY_HASH_ARRAY;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }

@@ -66,8 +66,8 @@ public enum CscApiErrorType {
     REVOKED_CERTIFICATE,
     @JsonProperty("suspended_certificate")
     SUSPENDED_CERTIFICATE,
-    @JsonProperty("empty_hash")
-    EMPTY_HASH,
+    @JsonProperty("empty_hash_array")
+    EMPTY_HASH_ARRAY,
     @JsonProperty("not_implemented")
     NOT_IMPLEMENTED;
 
