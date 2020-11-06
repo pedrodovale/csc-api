@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
@@ -307,6 +308,23 @@ public class CscApiControllerAdvice {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.LOCKED_PIN;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscInvalidBase64ParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscInvalidBase64ParameterException(CscInvalidBase64ParameterException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiRequestParameter cscApiRequestParameter = e.getCscApiRequestParameter();
+        if (cscApiRequestParameter == null) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+        String parameterName = cscApiRequestParameter.getParameterName();
+        String parameterType = cscApiRequestParameter.getParameterType();
+        CscApiErrorType error = CscApiErrorType.INVALID_BASE64_PARAMETER;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterName, parameterType}, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }

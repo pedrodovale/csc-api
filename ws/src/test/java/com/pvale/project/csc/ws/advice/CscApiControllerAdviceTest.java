@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
+import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
@@ -434,6 +435,30 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.LOCKED_PIN, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsExtendTransaction_thenReturnInvalidBase64ParameterErrorForInvalidBase64Hash() throws Exception {
+
+        CscInvalidBase64ParameterException invalidBase64ParameterException = new CscInvalidBase64ParameterException(CscApiRequestParameter.HASH);
+        Mockito.when(this.cscApiService.credentialsExtendTransaction(any())).thenThrow(invalidBase64ParameterException);
+
+        CredentialsExtendTransactionRequest credentialsExtendTransactionRequest = new CredentialsExtendTransactionRequest();
+        credentialsExtendTransactionRequest.setCredentialId("credentialId");
+        credentialsExtendTransactionRequest.setSad("sad");
+        credentialsExtendTransactionRequest.setHash(Collections.singleton("notBase64String.!@#"));
+
+        CscApiRequestParameter cscApiRequestParameter = invalidBase64ParameterException.getCscApiRequestParameter();
+        String parameterName = cscApiRequestParameter.getParameterName();
+        String parameterType = cscApiRequestParameter.getParameterType();
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_BASE64_PARAMETER, new String[]{parameterName, parameterType})));
 
     }
 
