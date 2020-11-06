@@ -15,6 +15,7 @@ import com.pvale.project.csc.api.exception.CscInvalidPinException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
+import com.pvale.project.csc.api.exception.CscSadExpiredException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.exception.CscUnauthorizedHashException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
@@ -334,6 +335,15 @@ public class CscApiControllerAdvice {
     public CscApiErrorResponse handleCscUnauthorizedHashException(CscUnauthorizedHashException e){
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.UNAUTHORIZED_HASH;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscSadExpiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscSadExpiredException(CscSadExpiredException e){
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.SAD_EXPIRED;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }

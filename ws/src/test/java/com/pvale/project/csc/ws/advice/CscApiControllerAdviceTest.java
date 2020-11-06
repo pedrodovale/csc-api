@@ -13,6 +13,7 @@ import com.pvale.project.csc.api.exception.CscInvalidPinException;
 import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
+import com.pvale.project.csc.api.exception.CscSadExpiredException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.exception.CscUnauthorizedHashException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
@@ -481,6 +482,25 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.UNAUTHORIZED_HASH, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsExtendTransaction_thenReturnSadExpiredError() throws Exception {
+
+        CscSadExpiredException sadExpiredException = new CscSadExpiredException();
+        Mockito.when(this.cscApiService.credentialsExtendTransaction(any())).thenThrow(sadExpiredException);
+
+        CredentialsExtendTransactionRequest credentialsExtendTransactionRequest = new CredentialsExtendTransactionRequest();
+        credentialsExtendTransactionRequest.setCredentialId("credentialId");
+        credentialsExtendTransactionRequest.setSad("expiredSad");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.SAD_EXPIRED, null)));
 
     }
 
