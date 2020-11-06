@@ -14,6 +14,7 @@ import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
+import com.pvale.project.csc.api.exception.CscUnauthorizedHashException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
 import com.pvale.project.csc.api.request.CredentialsInfoRequest;
@@ -459,6 +460,27 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_BASE64_PARAMETER, new String[]{parameterName, parameterType})));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnUnauthorizedHashError() throws Exception {
+
+        CscUnauthorizedHashException unauthorizedHashException = new CscUnauthorizedHashException();
+        Mockito.when(this.cscApiService.signaturesSignHash(any())).thenThrow(unauthorizedHashException);
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("credentialId");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setHash(Collections.singleton("unauthorizedHash"));
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.UNAUTHORIZED_HASH, null)));
 
     }
 

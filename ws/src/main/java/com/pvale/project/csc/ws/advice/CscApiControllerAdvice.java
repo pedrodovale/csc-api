@@ -16,6 +16,7 @@ import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscOtpLockedException;
 import com.pvale.project.csc.api.exception.CscPinLockedException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
+import com.pvale.project.csc.api.exception.CscUnauthorizedHashException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -325,6 +326,15 @@ public class CscApiControllerAdvice {
         String parameterType = cscApiRequestParameter.getParameterType();
         CscApiErrorType error = CscApiErrorType.INVALID_BASE64_PARAMETER;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterName, parameterType}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscUnauthorizedHashException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscUnauthorizedHashException(CscUnauthorizedHashException e){
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.UNAUTHORIZED_HASH;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }
