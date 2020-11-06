@@ -8,6 +8,7 @@ import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
+import com.pvale.project.csc.api.exception.CscInvalidDigestValueLengthException;
 import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
@@ -332,7 +333,7 @@ public class CscApiControllerAdvice {
 
     @ExceptionHandler(CscUnauthorizedHashException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public CscApiErrorResponse handleCscUnauthorizedHashException(CscUnauthorizedHashException e){
+    public CscApiErrorResponse handleCscUnauthorizedHashException(CscUnauthorizedHashException e) {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.UNAUTHORIZED_HASH;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
@@ -341,9 +342,18 @@ public class CscApiControllerAdvice {
 
     @ExceptionHandler(CscSadExpiredException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public CscApiErrorResponse handleCscSadExpiredException(CscSadExpiredException e){
+    public CscApiErrorResponse handleCscSadExpiredException(CscSadExpiredException e) {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.SAD_EXPIRED;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscInvalidDigestValueLengthException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscInvalidDigestValueLengthException(CscInvalidDigestValueLengthException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.INVALID_DIGEST_VALUE_LENGTH;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }

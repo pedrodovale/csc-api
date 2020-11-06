@@ -6,6 +6,7 @@ import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidBase64ParameterException;
+import com.pvale.project.csc.api.exception.CscInvalidDigestValueLengthException;
 import com.pvale.project.csc.api.exception.CscInvalidOtpException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
@@ -501,6 +502,26 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.SAD_EXPIRED, null)));
+
+    }
+
+    @Test
+    void whenCallCredentialsExtendTransaction_thenReturnInvalidDigestValueLengthError() throws Exception {
+
+        CscInvalidDigestValueLengthException invalidDigestValueLengthException = new CscInvalidDigestValueLengthException();
+        Mockito.when(this.cscApiService.credentialsExtendTransaction(any())).thenThrow(invalidDigestValueLengthException);
+
+        CredentialsExtendTransactionRequest credentialsExtendTransactionRequest = new CredentialsExtendTransactionRequest();
+        credentialsExtendTransactionRequest.setCredentialId("credentialId");
+        credentialsExtendTransactionRequest.setSad("sad");
+        credentialsExtendTransactionRequest.setHash(Collections.singleton("invalidDigestValueLengthHash"));
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_DIGEST_VALUE_LENGTH, null)));
 
     }
 
