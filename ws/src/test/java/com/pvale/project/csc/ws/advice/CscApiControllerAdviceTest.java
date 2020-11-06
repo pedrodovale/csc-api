@@ -7,6 +7,7 @@ import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
+import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
 import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
@@ -332,6 +333,24 @@ class CscApiControllerAdviceTest {
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PARAMETER_VALUE, new String[]{invalidParameterValueException.getCscApiRequestParameter().getParameterName()})));
 
 
+    }
+
+    @Test
+    void whenCallCredentialsAuthorize_thenReturnNumberSignaturesTooHigh() throws Exception {
+
+        CscNumberSignaturesTooHighException numberSignaturesTooHighException = new CscNumberSignaturesTooHighException();
+        Mockito.when(this.cscApiService.credentialsAuthorize(any())).thenThrow(numberSignaturesTooHighException);
+
+        CredentialsAuthorizeRequest credentialsAuthorizeRequest = new CredentialsAuthorizeRequest();
+        credentialsAuthorizeRequest.setCredentialId("credentialId");
+        credentialsAuthorizeRequest.setNumSignatures(1000);
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_AUTHORIZE_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsAuthorizeRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.NUM_SIGNATURES_TOO_HIGH, null)));
     }
 
     private String getJsonErrorMessage(CscApiErrorType cscApiErrorType, Object[] args) throws JsonProcessingException {

@@ -9,6 +9,7 @@ import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
 import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterValueException;
+import com.pvale.project.csc.api.exception.CscNumberSignaturesTooHighException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -257,6 +258,15 @@ public class CscApiControllerAdvice {
         String parameterName = cscApiRequestParameter.getParameterName();
         CscApiErrorType error = CscApiErrorType.INVALID_PARAMETER_VALUE;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterName}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscNumberSignaturesTooHighException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscNumberSignaturesTooHighException(CscNumberSignaturesTooHighException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.NUM_SIGNATURES_TOO_HIGH;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }
