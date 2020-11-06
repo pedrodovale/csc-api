@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
+import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
+import com.pvale.project.csc.api.request.CredentialsExtendTransactionRequest;
 import com.pvale.project.csc.api.request.CredentialsInfoRequest;
 import com.pvale.project.csc.api.request.CredentialsListRequest;
 import com.pvale.project.csc.api.request.InfoRequest;
@@ -267,6 +269,25 @@ class CscApiControllerAdviceTest {
                 post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
                         .contentType(MediaType.ALL_VALUE))
                 .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
+    void whenCallCredentialsExtendTransaction_thenReturnInvalidParameterErrorForInvalidCredentialId() throws Exception {
+
+        CscInvalidParameterException invalidParameterException = new CscInvalidParameterException(CscApiRequestParameter.CREDENTIAL_ID);
+        Mockito.when(this.cscApiService.credentialsExtendTransaction(any())).thenThrow(invalidParameterException);
+
+        CredentialsExtendTransactionRequest credentialsExtendTransactionRequest = new CredentialsExtendTransactionRequest();
+        credentialsExtendTransactionRequest.setCredentialId("wrongCredentialId");
+        credentialsExtendTransactionRequest.setSad("sad");
+
+        this.mockMvc.perform(
+                post(CREDENTIALS_BASE_URL + CredentialsController.CREDENTIALS_EXTEND_TRANSACTION_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PARAMETER, new String[]{CscApiRequestParameter.CREDENTIAL_ID.getParameterName()})));
+
     }
 
     private String getJsonErrorMessage(CscApiErrorType cscApiErrorType, Object[] args) throws JsonProcessingException {

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
+import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
+import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -48,7 +49,6 @@ public class CscApiControllerAdvice {
 
     @ExceptionHandler({Exception.class, CscServerErrorException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
     public CscApiErrorResponse handleException(Exception e) {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.SERVER_ERROR;
@@ -65,7 +65,6 @@ public class CscApiControllerAdvice {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
     public CscApiErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
@@ -157,7 +156,6 @@ public class CscApiControllerAdvice {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
     public CscApiErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
 
@@ -212,11 +210,26 @@ public class CscApiControllerAdvice {
 
     @ExceptionHandler(UnrecognizedPropertyException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
     public CscApiErrorResponse handleUnrecognizedPropertyException(UnrecognizedPropertyException e) {
         LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscInvalidParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscInvalidParameterException(CscInvalidParameterException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiRequestParameter cscApiRequestParameter = e.getCscApiRequestParameter();
+        if (cscApiRequestParameter == null) {
+            CscApiErrorType error = CscApiErrorType.INVALID_REQUEST;
+            String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
+            return new CscApiErrorResponse(error, errorDescription);
+        }
+        String parameterName = cscApiRequestParameter.getParameterName();
+        CscApiErrorType error = CscApiErrorType.INVALID_PARAMETER;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterName}, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }
