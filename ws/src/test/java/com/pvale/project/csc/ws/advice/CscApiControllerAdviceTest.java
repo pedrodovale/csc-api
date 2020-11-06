@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
+import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.request.CredentialsAuthorizeRequest;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -287,6 +289,27 @@ class CscApiControllerAdviceTest {
                         .content(this.objectMapper.writeValueAsString(credentialsExtendTransactionRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.INVALID_PARAMETER, new String[]{CscApiRequestParameter.CREDENTIAL_ID.getParameterName()})));
+
+    }
+
+    @Test
+    void whenCallSignaturesSignHash_thenReturnCredentialIsDisabledError() throws Exception {
+
+        CscCredentialDisabledException credentialDisabledException = new CscCredentialDisabledException();
+        Mockito.when(this.cscApiService.signaturesSignHash(any())).thenThrow(credentialDisabledException);
+
+        SignaturesSignHashRequest signaturesSignHashRequest = new SignaturesSignHashRequest();
+        signaturesSignHashRequest.setCredentialId("disabledCredential");
+        signaturesSignHashRequest.setSad("sad");
+        signaturesSignHashRequest.setHash(Collections.emptySet());
+        signaturesSignHashRequest.setSignAlgo("signAlgo");
+
+        this.mockMvc.perform(
+                post(SIGNATURES_BASE_URL + SignaturesController.SIGNATURES_SIGN_HASH_CONTEXT_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(signaturesSignHashRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(this.getJsonErrorMessage(CscApiErrorType.CREDENTIAL_IS_DISABLED, null)));
 
     }
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.pvale.project.csc.api.enumerator.CscApiErrorType;
 import com.pvale.project.csc.api.enumerator.CscApiRequestParameter;
+import com.pvale.project.csc.api.exception.CscCredentialDisabledException;
 import com.pvale.project.csc.api.exception.CscInvalidParameterException;
 import com.pvale.project.csc.api.exception.CscServerErrorException;
 import com.pvale.project.csc.api.response.CscApiErrorResponse;
@@ -230,6 +231,15 @@ public class CscApiControllerAdvice {
         String parameterName = cscApiRequestParameter.getParameterName();
         CscApiErrorType error = CscApiErrorType.INVALID_PARAMETER;
         String errorDescription = this.messageSource.getMessage(error.getApiError(), new String[]{parameterName}, LOCALE);
+        return new CscApiErrorResponse(error, errorDescription);
+    }
+
+    @ExceptionHandler(CscCredentialDisabledException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CscApiErrorResponse handleCscCredentialDisabledException(CscCredentialDisabledException e) {
+        LOGGER.error("Handling exception {}: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        CscApiErrorType error = CscApiErrorType.CREDENTIAL_IS_DISABLED;
+        String errorDescription = this.messageSource.getMessage(error.getApiError(), null, LOCALE);
         return new CscApiErrorResponse(error, errorDescription);
     }
 }
