@@ -16,6 +16,7 @@
         <module>bsl</module>
         <module>api</module>
         <module>configurations</module>
+        <module>authorization_server</module>
     </modules>
 
     <properties>
