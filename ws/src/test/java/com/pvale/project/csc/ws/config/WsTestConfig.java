@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import(WsCoreConfig.class)
+@Import(WsConfig.class)
 public class WsTestConfig {
 
     @Bean
