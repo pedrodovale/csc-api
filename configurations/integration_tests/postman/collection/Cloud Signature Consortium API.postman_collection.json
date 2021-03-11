@@ -1,18 +1,84 @@
 {
 	"info": {
-		"_postman_id": "6b53c476-931b-4f47-a2fb-8778b9f9546a",
+		"_postman_id": "f1e01abd-173b-41c4-8a7e-c62515fe28cc",
 		"name": "Cloud Signature Consortium API",
 		"description": "A collection to test the Cloud Signature Consortium API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
+			"name": "Authorization Server",
+			"item": [
+				{
+					"name": "introspect",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{cscApiResourceServerClientSecret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{cscApiResourceServerClientId}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "token",
+									"value": "{{accessTokenToIntrospect}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{tokenIntrospectUrl}}",
+							"host": [
+								"{{tokenIntrospectUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "token request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "OIDC Configuration Metadata",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{oidcConfigurationMetadataUrl}}",
+							"host": [
+								"{{oidcConfigurationMetadataUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "info",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "94c44c29-afd9-44ec-a21d-0b568589c426",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"  pm.response.to.have.status(200);",
@@ -223,5 +289,106 @@
 			"response": []
 		}
 	],
-	"protocolProfileBehavior": {}
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "client_authentication",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "{{accessTokenUrl}}",
+				"type": "string"
+			},
+			{
+				"key": "scope",
+				"value": "{{cscApiScope}}",
+				"type": "string"
+			},
+			{
+				"key": "clientSecret",
+				"value": "{{cscApiClientSecret}}",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{cscApiClientId}}",
+				"type": "string"
+			},
+			{
+				"key": "grant_type",
+				"value": "client_credentials",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "accessTokenUrl",
+			"value": "http://localhost:8080/auth/realms/csc-api/protocol/openid-connect/token"
+		},
+		{
+			"key": "cscApiClientId",
+			"value": "csc-api-postman-client"
+		},
+		{
+			"key": "cscApiClientSecret",
+			"value": "a1a3632b-f27b-4bab-9253-b6b3fc9b844e"
+		},
+		{
+			"key": "cscApiScope",
+			"value": "service"
+		},
+		{
+			"key": "cscApiResourceServerClientId",
+			"value": "csc-api-resource-server"
+		},
+		{
+			"key": "cscApiResourceServerClientSecret",
+			"value": "77787842-3bfe-4115-b688-d262ccaa4069"
+		},
+		{
+			"key": "tokenIntrospectUrl",
+			"value": "http://localhost:8080/auth/realms/csc-api/protocol/openid-connect/token/introspect"
+		},
+		{
+			"key": "accessTokenToIntrospect",
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGa0ExMG9OQlcxMVZEWTdPSXBlZmlOM09wSFdVWFY5QmtXWmg5MmhtdTdJIn0.eyJleHAiOjE2MTQ3MTIwMzgsImlhdCI6MTYxNDcxMTczOCwianRpIjoiNGQyZmZmMGMtOWJiOS00MjI1LWJjYTctNTc0ZWNkNjE1YjY1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL2NzYy1hcGkiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZmVlN2U2MDItYWI0Mi00ZmY5LTg4YjktMTg1NDBlOGYwNWE4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiY3NjLWFwaS1wb3N0bWFuLWNsaWVudCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCBzZXJ2aWNlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRIb3N0IjoiMTI3LjAuMC4xIiwiY2xpZW50SWQiOiJjc2MtYXBpLXBvc3RtYW4tY2xpZW50IiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LWNzYy1hcGktcG9zdG1hbi1jbGllbnQiLCJjbGllbnRBZGRyZXNzIjoiMTI3LjAuMC4xIn0.h_9zcjHs35cg55AfIEn3w8xo-oX7C-Udaledgj1wz_lbpqkWbBvwyGZ0KuNJwkzz0vxKNJndeCQCqirsp8ONJv1Dapl53PQj-U2uYPJEO07-VwcFkHl-lgnF_PJ8w9tgkNrCFT0vAeMr40z8A7sEcbMHunKIjVso2p3L1s4aYWt7Q-fjNaWhcMZjHWoI6BltElkFPqbNWoG8ye-L5lfqq-EWg4BiCjL-xSIAchi7OVvDD15SFyWrr9LAzQJoZEehfBv6JlazOPoofiALdlql7udmdzQeCOo2iFSRd-7JghhqfevSGXPKmWskmTq8z9e4EMeX4Y9eMueFd9C4RTXMZg"
+		},
+		{
+			"key": "oidcConfigurationMetadataUrl",
+			"value": "http://localhost:8080/auth/realms/csc-api/.well-known/openid-configuration"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		}
+	]
 }
