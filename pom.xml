@@ -32,8 +32,9 @@
         <!-- dependencies -->
         <version.spring-boot-dependencies>2.4.3</version.spring-boot-dependencies>
         <version.apache-commons-lang3>3.11</version.apache-commons-lang3>
+        <version.mockserver-netty>5.11.2</version.mockserver-netty>
+        <version.mockserver-client-java>5.11.2</version.mockserver-client-java>
     </properties>
-
 
     <dependencyManagement>
         <dependencies>
@@ -59,6 +60,18 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${version.apache-commons-lang3}</version>
+            </dependency>
+
+            <!-- Mock server - for mocking Authorization Server -->
+            <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-netty</artifactId>
+                <version>${version.mockserver-netty}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-client-java</artifactId>
+                <version>${version.mockserver-client-java}</version>
             </dependency>
 
             <!-- CSC API dependencies -->

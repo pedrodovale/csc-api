@@ -1,0 +1,3 @@
+mock:
+  authorization-server:
+    port: 8080
