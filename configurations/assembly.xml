@@ -30,5 +30,13 @@
                 <include>*.postman_environment.json</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>integration_tests/keycloak</directory>
+            <outputDirectory>keycloak/</outputDirectory>
+            <includes>
+                <include>*.md</include>
+                <include>*.json</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
